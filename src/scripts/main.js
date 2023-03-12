@@ -43,33 +43,44 @@ emptyCart.addEventListener("click", () =>{
 
 //新增＋刪除
 //老大
-btnBossAdd.addEventListener("click", () => {
+btnBossAdd.addEventListener("click", addBoss);
+function addBoss(){
+    const td3 = document.querySelector('.boss > td:nth-child(3)');
+    const td4 = document.querySelector('.boss > td:nth-child(4)');
+    let bossTr = document.querySelector(".boss");
+    const boss_quantity = document.querySelector(".boss_quantity");
+    let btnBossDel = document.querySelector(".btn-boss-del");
+
+    //取得元素
     if(boss_counter == 0){
         const el = document.createElement("tr");
         el.classList.add("boss");
         el.innerHTML = 
         `<td>老大</td>
-         <td><input type="number" class="boss_quantity" value="1" /></td>
-         <td>$20</td>
-         <td>$20</td>
-         <td>
-          <button class="remove-item-btn btn btn-danger btn-sm btn-boss-del">
+        <td><input type="number" class="boss_quantity" value="1" /></td>
+        <td>$20</td>
+        <td>$20</td>
+        <td>
+        <button class="remove-item-btn btn btn-danger btn-sm btn-boss-del">
             <i class="fas fa-trash-alt"></i>
-          </button>
-         </td>`;
+        </button>
+        </td>`;
         tbody.appendChild(el); 
         boss_counter = 1;
-
         result_totalPrice += 20;
         totalPrice.textContent = `$${result_totalPrice.toFixed(2)}`;
+        console.log(`1: ${result_totalPrice}`);
 
+        btnBossDel = document.querySelector(".btn-boss-del");
+        btnBossDel.addEventListener('click', () =>{
+            bossTr = document.querySelector(".boss");
+            bossTr.remove(bossTr);
+            boss_counter = 0;
+            result_totalPrice -= 20;
+            totalPrice.textContent = `$${result_totalPrice.toFixed(2)}`; 
+        }); 
     }else{
-        const td3 = document.querySelector('.boss > td:nth-child(3)');
-        const td4 = document.querySelector('.boss > td:nth-child(4)');
-        const bossTr = document.querySelector(".boss");
-
         boss_counter += 1;
-        const boss_quantity = document.querySelector(".boss_quantity");
         boss_quantity.addEventListener('input', () => {
             if(boss_quantity.value < 0){
                 boss_quantity.value = 0;
@@ -86,21 +97,21 @@ btnBossAdd.addEventListener("click", () => {
         let item_total_cost = item_cost * (boss_quantity.value);
         td4.textContent = `$${item_total_cost}`;
         
-        const btnBossDel = document.querySelector(".btn-boss-del");
-        if(!btnBossDel.onclick){
-            console.log("1");
-            btnBossDel.addEventListener('click', () =>{
-                bossTr.remove(bossTr);
-                boss_counter = 0;
-                result_totalPrice -= item_total_cost;
-                console.log(item_total_cost);
-                totalPrice.textContent = `$${result_totalPrice.toFixed(2)}`; 
-            });
-        }
+        btnBossDel.addEventListener('click', () =>{
+            bossTr.remove(bossTr);
+            boss_counter = 0;
+            result_totalPrice -= item_cost;
+            totalPrice.textContent = `$${result_totalPrice.toFixed(2)}`; 
+        }); 
+
         result_totalPrice += item_cost;
         totalPrice.textContent = `$${result_totalPrice.toFixed(2)}`;
-    }
-});
+    }        
+} 
+    
+
+    
+
 //貝貝
 btnCowryAdd.addEventListener("click", () => {
     if(cowry_counter == 0){
@@ -122,7 +133,7 @@ btnCowryAdd.addEventListener("click", () => {
         result_totalPrice += 15;
         totalPrice.textContent = `$${result_totalPrice.toFixed(2)}`;
     }else{
-        const td3 = document.querySelector('.cowry > td:nth-child(3)');
+        const td3 = document.querySelector('.cowry > td:nth-child(3)'); 
         const td4 = document.querySelector('.cowry > td:nth-child(4)');
         const cowryTr = document.querySelector(".cowry");
 
@@ -145,8 +156,6 @@ btnCowryAdd.addEventListener("click", () => {
             btnCowryDel.addEventListener('click', () =>{
                 cowryTr.remove(cowryTr);
                 cowry_counter = 0;
-                result_totalPrice -= item_total_cost;
-                totalPrice.textContent = `$${result_totalPrice.toFixed(2)}`;
             });
         }
         result_totalPrice += item_cost;
@@ -196,8 +205,6 @@ btnTigerAdd.addEventListener("click", () => {
             btnTigerDel.addEventListener('click', () =>{
                 tigerTr.remove(tigerTr);
                 tiger_counter = 0;
-                result_totalPrice -= item_total_cost;
-                totalPrice.textContent = `$${result_totalPrice.toFixed(2)}`;
             });
         }
         result_totalPrice += item_cost;
@@ -247,8 +254,6 @@ btnFatAdd.addEventListener("click", () => {
             btnFatDel.addEventListener('click', () =>{
                 fatTr.remove(fatTr);
                 fat_counter = 0;
-                result_totalPrice -= item_total_cost;
-                totalPrice.textContent = `$${result_totalPrice.toFixed(2)}`;
             });
         }
         result_totalPrice += item_cost;
@@ -302,8 +307,6 @@ btnFlowerAdd.addEventListener("click", () => {
                 totalPrice.textContent = `$${result_totalPrice.toFixed(2)}`;
             });
         }
-        result_totalPrice += item_cost;
-        totalPrice.textContent = `$${result_totalPrice.toFixed(2)}`;
     }
 });
 //黑臉
@@ -349,8 +352,6 @@ btnBFAdd.addEventListener("click", () => {
             btnBFDel.addEventListener('click', () =>{
                 BFTr.remove(BFTr);
                 BF_counter = 0;
-                result_totalPrice -= item_total_cost;
-                totalPrice.textContent = `$${result_totalPrice.toFixed(2)}`;
             });
         }
         result_totalPrice += item_cost;
