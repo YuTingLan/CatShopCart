@@ -5,356 +5,172 @@ import "@fortawesome/fontawesome-free/css/all.css"
 
 const tbody = document.querySelector("tbody");
 const emptyCart = document.querySelector(".empty-cart");
-const totalPrice = document.querySelector(".total-price");
-const btnBFAdd = document.querySelector(".btn-BF-add");
-const btnFatAdd = document.querySelector(".btn-fat-add");
-const btnBossAdd = document.querySelector(".btn-boss-add");
-const btnCowryAdd = document.querySelector(".btn-cowry-add");
-const btnTigerAdd = document.querySelector(".btn-tiger-add");
-const btnFlowerAdd = document.querySelector(".btn-flower-add");
-
-
-let BF_counter = 0;
-let fat_counter = 0;
-let boss_counter = 0;
-let cowry_counter = 0;
-let tiger_counter = 0;
-let flower_counter = 0;
-let result_totalPrice = 0;
+let totalPrice = document.querySelector(".total-price");
+let resultPrice = 0;
 
 ///清空購物車
-emptyCart.addEventListener("click", () =>{
-    if(tbody != null){
+emptyCart.addEventListener("click", () =>
+{
+    if(tbody != null)
+    {
         tbody.replaceChildren();
-        // while(tbody.firstChild){
-        //     tbody.firstChild.remove();
-        //     totalPrice.textContent = "$0"; 
-        // }
         totalPrice.textContent = "$0"; 
-        BF_counter = 0;
-        fat_counter = 0;
-        boss_counter = 0;
-        cowry_counter = 0;
-        tiger_counter = 0;
-        flower_counter = 0;
-        result_totalPrice = 0;
     };
 });
 
-//新增＋刪除
-//老大
-btnBossAdd.addEventListener("click", addBoss);
-function addBoss(){
-    const td3 = document.querySelector('.boss > td:nth-child(3)');
-    const td4 = document.querySelector('.boss > td:nth-child(4)');
-    let bossTr = document.querySelector(".boss");
-    const boss_quantity = document.querySelector(".boss_quantity");
-    let btnBossDel = document.querySelector(".btn-boss-del");
 
-    //取得元素
-    if(boss_counter == 0){
-        const el = document.createElement("tr");
-        el.classList.add("boss");
-        el.innerHTML = 
-        `<td>老大</td>
-        <td><input type="number" class="boss_quantity" value="1" /></td>
-        <td>$20</td>
-        <td>$20</td>
-        <td>
-        <button class="remove-item-btn btn btn-danger btn-sm btn-boss-del">
+const addCatBtn = document.getElementsByClassName("btn-add");
+for(let i = 0; i < addCatBtn.length; i++)
+{
+    addCatBtn[i].addEventListener("click", () => 
+    {
+        addCatCart(i);
+    });
+}
+
+function counterItems(name){
+    const rows = tbody.querySelectorAll("tr");
+    rows.forEach((row) => 
+    {
+        const nameCell = row.querySelector("td:nth-child(1)"); //td:nth-child(1)意即欄位1：項目
+        const quantityInput = row.querySelector(".quantity"); //數量
+        const itemCostCell = row.querySelector("td:nth-child(3)"); //td:nth-child(3)意即欄位3：單價
+        let itemTotalCostCell = row.querySelector("td:nth-child(4)"); //td:nth-child(4)意即欄位4：小計
+        const btnDel = row.querySelector("td:nth-child(5)"); //td:nth-child(5)意即欄位5：btnDel
+        if (nameCell.textContent == name) 
+        {
+            quantityInput.addEventListener('input', () => 
+            {
+                if(quantityInput.value < 0)
+                {
+                    quantityInput.value = 0;
+                };
+            });
+            quantityInput.value++;  //value = 1,2,3...N (按下次數)
+            //小計 = 單價＊數量, 最後把小計用textContent轉成文字內容且加上“＄”
+            itemTotalCostCell.textContent = `$${(itemCostCell.textContent.replace('$', '') * quantityInput.value)}`;
+            //總價 = 小計轉數字的累加值
+            resultPrice += Number(itemCostCell.textContent.replace('$', ''));
+            //把最後輸出的總價轉成數字並加上“＄”
+            totalPrice.textContent = `$${resultPrice.toFixed(2)}`;
+        }
+    });
+}
+
+function addTableRow(tdName, tdItemCost, tdItemTotalCost, btnDelName)
+{
+    const el = document.createElement("tr");
+    el.innerHTML = 
+    `<td>${tdName}</td>
+    <td><input type="number" class="quantity" value="1" /></td>
+    <td>$${tdItemCost}</td>
+    <td>$${tdItemTotalCost}</td>
+    <td>
+        <button class="remove-item-btn btn btn-danger btn-sm btn-${btnDelName}-del">
             <i class="fas fa-trash-alt"></i>
         </button>
-        </td>`;
-        tbody.appendChild(el); 
-        boss_counter = 1;
-        result_totalPrice += 20;
-        totalPrice.textContent = `$${result_totalPrice.toFixed(2)}`;
-        console.log(`1: ${result_totalPrice}`);
+    </td>`;
+    tbody.appendChild(el);
+    //第一次按下的總價
+    resultPrice += tdItemTotalCost;
+    totalPrice.textContent = `$${resultPrice.toFixed(2)}`;
 
-        btnBossDel = document.querySelector(".btn-boss-del");
-        btnBossDel.addEventListener('click', () =>{
-            bossTr = document.querySelector(".boss");
-            bossTr.remove(bossTr);
-            boss_counter = 0;
-            result_totalPrice -= 20;
-            totalPrice.textContent = `$${result_totalPrice.toFixed(2)}`; 
-        }); 
-    }else{
-        boss_counter += 1;
-        boss_quantity.addEventListener('input', () => {
-            if(boss_quantity.value < 0){
-                boss_quantity.value = 0;
-            }
-        });
-        boss_quantity.value = boss_counter;
-        
-        // 使用 innerHTML 屬性來獲取 td 元素中的內容
-        const tdContent = td3.innerHTML;
-        // 使用 replace() 方法刪除 $
-        const tdStr = tdContent.replace('$', '');
-        // 將數字字符串轉換成數字
-        const item_cost = Number(tdStr); //9.99
-        let item_total_cost = item_cost * (boss_quantity.value);
-        td4.textContent = `$${item_total_cost}`;
-        
-        btnBossDel.addEventListener('click', () =>{
-            bossTr.remove(bossTr);
-            boss_counter = 0;
-            result_totalPrice -= item_cost;
-            totalPrice.textContent = `$${result_totalPrice.toFixed(2)}`; 
-        }); 
+    const btnDel = document.querySelector(`.btn-${btnDelName}-del`);
+    btnDel.addEventListener('click', () =>
+    {
+        delTableRow(`${tdName}`);    
+    }); 
+}
 
-        result_totalPrice += item_cost;
-        totalPrice.textContent = `$${result_totalPrice.toFixed(2)}`;
-    }        
-} 
-    
-
-    
-
-//貝貝
-btnCowryAdd.addEventListener("click", () => {
-    if(cowry_counter == 0){
-        const el = document.createElement("tr");
-        el.classList.add("cowry");
-        el.innerHTML = 
-        `<td>貝貝</td>
-         <td><input type="number" class="cowry_quantity" value="1" /></td>
-         <td>$15</td>
-         <td>$15</td>
-         <td>
-          <button class="remove-item-btn btn btn-danger btn-sm btn-cowry-del">
-            <i class="fas fa-trash-alt"></i>
-          </button>
-         </td>`
-        tbody.appendChild(el); 
-        cowry_counter = 1;
-
-        result_totalPrice += 15;
-        totalPrice.textContent = `$${result_totalPrice.toFixed(2)}`;
-    }else{
-        const td3 = document.querySelector('.cowry > td:nth-child(3)'); 
-        const td4 = document.querySelector('.cowry > td:nth-child(4)');
-        const cowryTr = document.querySelector(".cowry");
-
-        cowry_counter += 1;
-        const cowry_quantity = document.querySelector(".cowry_quantity");
-        cowry_quantity.value = cowry_counter;
-        
-        // 使用 innerHTML 屬性來獲取 td 元素中的內容
-        const tdContent = td3.innerHTML;
-        // 使用 replace() 方法刪除 $
-        const tdStr = tdContent.replace('$', '');
-        // 將數字字符串轉換成數字
-        const item_cost = Number(tdStr); //9.99
-        let item_total_cost = item_cost * (cowry_quantity.value);
-        td4.textContent = `$${item_total_cost}`;
-
-        if(cowry_counter == 2){
-            // console.log("test");
-            const btnCowryDel = document.querySelector(".btn-cowry-del");
-            btnCowryDel.addEventListener('click', () =>{
-                cowryTr.remove(cowryTr);
-                cowry_counter = 0;
-            });
+function delTableRow(tdName)
+{
+    const rows = tbody.querySelectorAll("tr");
+    rows.forEach((row) => 
+    {
+        const nameCell = row.querySelector("td:nth-child(1)"); //td:nth-child(1)意即欄位1：項目
+        let itemTotalCostCell = row.querySelector("td:nth-child(4)"); //td:nth-child(4)意即欄位4：小計
+        if (nameCell.textContent == `${tdName}`) 
+        {
+            row.remove();
+            resultPrice -= Number(itemTotalCostCell.textContent.replace('$', ''));
+            totalPrice.textContent = `$${resultPrice.toFixed(2)}`;
         }
-        result_totalPrice += item_cost;
-        totalPrice.textContent = `$${result_totalPrice.toFixed(2)}`;
-    }
-});
-//老虎
-btnTigerAdd.addEventListener("click", () => {
-    if(tiger_counter == 0){
-        const el = document.createElement("tr");
-        el.classList.add("tiger");
-        el.innerHTML = 
-        `<td>老虎</td>
-         <td><input type="number" class="tiger_quantity" value="1" /></td>
-         <td>$10</td>
-         <td>$10</td>
-         <td>
-          <button class="remove-item-btn btn btn-danger btn-sm btn-tiger-del">
-            <i class="fas fa-trash-alt"></i>
-          </button>
-         </td>`;
-        tbody.appendChild(el); 
-        tiger_counter = 1;
-        result_totalPrice += 10;
-        totalPrice.textContent = `$${result_totalPrice.toFixed(2)}`;
-    }else{
-        const td3 = document.querySelector('.tiger > td:nth-child(3)');
-        const td4 = document.querySelector('.tiger > td:nth-child(4)');
-        const tigerTr = document.querySelector(".tiger");
+    });
+}
 
-        tiger_counter += 1;
-        const tiger_quantity = document.querySelector(".tiger_quantity");
-        tiger_quantity.value = tiger_counter;
-        
-        // 使用 innerHTML 屬性來獲取 td 元素中的內容
-        const tdContent = td3.innerHTML;
-        // 使用 replace() 方法刪除 $
-        const tdStr = tdContent.replace('$', '');
-        // 將數字字符串轉換成數字
-        const item_cost = Number(tdStr); //9.99
-        let item_total_cost = item_cost * (tiger_quantity.value);
-        td4.textContent = `$${item_total_cost}`;
+function addCatCart(index)
+{
+    let btnBossDel = document.querySelector(".btn-boss-del");
+    let btnCowryDel = document.querySelector(".btn-cowry-del");
+    let btnTigerDel = document.querySelector(".btn-tiger-del");
+    let btnFatDel = document.querySelector(".btn-fat-del");
+    let btnFlowerDel = document.querySelector(".btn-flower-del");
+    let btnBFDel = document.querySelector(".btn-BF-del");
 
-        if(tiger_counter == 2){
-            // console.log("test");
-            const btnTigerDel = document.querySelector(".btn-tiger-del");
-            btnTigerDel.addEventListener('click', () =>{
-                tigerTr.remove(tigerTr);
-                tiger_counter = 0;
-            });
+    if(index == 0)
+    {
+        if(btnBossDel)
+        {
+            counterItems("老大");
         }
-        result_totalPrice += item_cost;
-        totalPrice.textContent = `$${result_totalPrice.toFixed(2)}`;
-    }
-});
-//胖胖
-btnFatAdd.addEventListener("click", () => {
-    if(fat_counter == 0){
-        const el = document.createElement("tr");
-        el.classList.add("fat");
-        el.innerHTML = 
-        `<td>胖胖</td>
-         <td><input type="number" class="fat_quantity" value="1" /></td>
-         <td>$8.5</td>
-         <td>$8.5</td>
-         <td>
-          <button class="remove-item-btn btn btn-danger btn-sm btn-fat-del">
-            <i class="fas fa-trash-alt"></i>
-          </button>
-         </td>`;
-        tbody.appendChild(el); 
-        fat_counter = 1;
-        result_totalPrice += 8.5;
-        totalPrice.textContent = `$${result_totalPrice.toFixed(2)}`;
-    }else{
-        const td3 = document.querySelector('.fat > td:nth-child(3)');
-        const td4 = document.querySelector('.fat > td:nth-child(4)');
-        const fatTr = document.querySelector(".fat");
+        else
+        {
+            addTableRow("老大", 20, 20, "boss");
 
-        fat_counter += 1;
-        const fat_quantity = document.querySelector(".fat_quantity");
-        fat_quantity.value = fat_counter;
-        
-        // 使用 innerHTML 屬性來獲取 td 元素中的內容
-        const tdContent = td3.innerHTML;
-        // 使用 replace() 方法刪除 $
-        const tdStr = tdContent.replace('$', '');
-        // 將數字字符串轉換成數字
-        const item_cost = Number(tdStr); //9.99
-        let item_total_cost = item_cost * (fat_quantity.value);
-        td4.textContent = `$${item_total_cost}`;
-
-        if(fat_counter == 2){
-            // console.log("test");
-            const btnFatDel = document.querySelector(".btn-fat-del");
-            btnFatDel.addEventListener('click', () =>{
-                fatTr.remove(fatTr);
-                fat_counter = 0;
-            });
-        }
-        result_totalPrice += item_cost;
-        totalPrice.textContent = `$${result_totalPrice.toFixed(2)}`;
-    }
-});
-//小花
-btnFlowerAdd.addEventListener("click", () => {
-    if(flower_counter == 0){
-        const el = document.createElement("tr");
-        el.classList.add("flower");
-        el.innerHTML = 
-        `<td>小花</td>
-         <td><input type="number" class="flower_quantity" value="1" /></td>
-         <td>$9.99</td>
-         <td>$9.99</td>
-         <td>
-            <button class="remove-item-btn btn btn-danger btn-sm btn-flower-del">
-                <i class="fas fa-trash-alt"></i>
-            </button>
-         </td>`;
-        tbody.appendChild(el); 
-        flower_counter = 1;
-        result_totalPrice += 9.99;
-        totalPrice.textContent = `$${result_totalPrice}`;
-    }else{
-        const td3 = document.querySelector('.flower > td:nth-child(3)');
-        const td4 = document.querySelector('.flower > td:nth-child(4)');
-        const flowerTr = document.querySelector(".flower");
-
-        flower_counter += 1;
-        const flower_quantity = document.querySelector(".flower_quantity");
-        flower_quantity.value = flower_counter;
-        
-        // 使用 innerHTML 屬性來獲取 td 元素中的內容
-        const tdContent = td3.innerHTML;
-        // 使用 replace() 方法刪除 $
-        const tdStr = tdContent.replace('$', '');
-        // 將數字字符串轉換成數字
-        const item_cost = Number(tdStr); //9.99
-        let item_total_cost = (item_cost * (flower_quantity.value)).toFixed(2);
-        td4.textContent = `$${item_total_cost}`;
-
-        if(flower_counter == 2){
-            // console.log("test");
-            const btnFlowerDel = document.querySelector(".btn-flower-del");
-            btnFlowerDel.addEventListener('click', () =>{
-                flowerTr.remove(flowerTr);
-                flower_counter = 0;
-                result_totalPrice -= item_total_cost;
-                totalPrice.textContent = `$${result_totalPrice.toFixed(2)}`;
-            });
         }
     }
-});
-//黑臉
-btnBFAdd.addEventListener("click", () => {
-    if(BF_counter == 0){
-        const el = document.createElement("tr");
-        el.classList.add("BF");
-        el.innerHTML = 
-        `<td>黑臉</td>
-         <td><input type="number" class="BF_quantity" value="1" /></td>
-         <td>$12.5</td>
-         <td>$12.5</td>
-         <td>
-          <button class="remove-item-btn btn btn-danger btn-sm btn-BF-del">
-            <i class="fas fa-trash-alt"></i>
-          </button>
-         </td>`;
-        tbody.appendChild(el); 
-        BF_counter = 1;
-        result_totalPrice += 12.5;
-        totalPrice.textContent = `$${result_totalPrice.toFixed(2)}`;
-    }else{
-        const td3 = document.querySelector('.BF > td:nth-child(3)');
-        const td4 = document.querySelector('.BF > td:nth-child(4)');
-        const BFTr = document.querySelector(".BF");
-
-        BF_counter += 1;
-        const BF_quantity = document.querySelector(".BF_quantity");
-        BF_quantity.value = BF_counter;
-        
-        // 使用 innerHTML 屬性來獲取 td 元素中的內容
-        const tdContent = td3.innerHTML;
-        // 使用 replace() 方法刪除 $
-        const tdStr = tdContent.replace('$', '');
-        // 將數字字符串轉換成數字
-        const item_cost = Number(tdStr); //9.99
-        let item_total_cost = item_cost * (BF_quantity.value);
-        td4.textContent = `$${item_total_cost}`;
-
-        if(BF_counter == 2){
-            // console.log("test");
-            const btnBFDel = document.querySelector(".btn-BF-del");
-            btnBFDel.addEventListener('click', () =>{
-                BFTr.remove(BFTr);
-                BF_counter = 0;
-            });
+    else if(index == 1)
+    { 
+        if(btnCowryDel)
+        {
+            counterItems("貝貝");
         }
-        result_totalPrice += item_cost;
-        totalPrice.textContent = `$${result_totalPrice.toFixed(2)}`;
+        else
+        {
+            addTableRow("貝貝", 15, 15, "cowry");
+        }
     }
-});
+    else if(index == 2)
+    {
+        if(btnTigerDel)
+        {
+            counterItems("老虎");
+        }
+        else
+        {
+            addTableRow("老虎", 10, 10, "tiger");
+        }
+    }
+    else if(index == 3){
+        if(btnFatDel)
+        {
+            counterItems("胖胖");
+        }
+        else
+        {
+            addTableRow("胖胖", 8.5, 8.5, "fat");
+        }
+    }
+    else if(index == 4)
+    {
+        if(btnFlowerDel)
+        {
+            counterItems("小花");
+        }
+        else
+        {
+            addTableRow("小花", 9.99, 9.99, "flower");
+        }
+    }
+    else if(index == 5)
+    {
+        if(btnBFDel)
+        {
+            counterItems("黑臉");
+        }
+        else
+        {
+            addTableRow("黑臉", 12.5, 12.5, "BF");
+        }
+    }
+}
