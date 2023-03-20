@@ -1,14 +1,14 @@
 import "bootstrap/dist/css/bootstrap.css"
 import "@fortawesome/fontawesome-free/css/all.css"
 // 實作寫在這裡！
-//宣告監聽元素
 
+//宣告監聽元素
 const tbody = document.querySelector("tbody");
 const emptyCart = document.querySelector(".empty-cart");
 let totalPrice = document.querySelector(".total-price");
 let resultPrice = 0;
 
-///清空購物車
+///清空購物車 btn
 emptyCart.addEventListener("click", () =>
 {
     if(tbody != null)
@@ -18,7 +18,7 @@ emptyCart.addEventListener("click", () =>
     };
 });
 
-
+// 新增小貓至購物車 btn
 const addCatBtn = document.getElementsByClassName("btn-add");
 for(let i = 0; i < addCatBtn.length; i++)
 {
@@ -28,6 +28,7 @@ for(let i = 0; i < addCatBtn.length; i++)
     });
 }
 
+// 針對按下 新增btn 的事件做處理
 function counterItems(name){
     const rows = tbody.querySelectorAll("tr");
     rows.forEach((row) => 
@@ -36,7 +37,7 @@ function counterItems(name){
         const quantityInput = row.querySelector(".quantity"); //數量
         const itemCostCell = row.querySelector("td:nth-child(3)"); //td:nth-child(3)意即欄位3：單價
         let itemTotalCostCell = row.querySelector("td:nth-child(4)"); //td:nth-child(4)意即欄位4：小計
-        const btnDel = row.querySelector("td:nth-child(5)"); //td:nth-child(5)意即欄位5：btnDel
+        // const btnDel = row.querySelector("td:nth-child(5)"); //td:nth-child(5)意即欄位5：btnDel
         if (nameCell.textContent == name) 
         {
             quantityInput.addEventListener('input', () => 
@@ -57,6 +58,7 @@ function counterItems(name){
     });
 }
 
+// 購物車列表
 function addTableRow(tdName, tdItemCost, tdItemTotalCost, btnDelName)
 {
     const el = document.createElement("tr");
@@ -82,6 +84,7 @@ function addTableRow(tdName, tdItemCost, tdItemTotalCost, btnDelName)
     }); 
 }
 
+// 刪除的btn
 function delTableRow(tdName)
 {
     const rows = tbody.querySelectorAll("tr");
@@ -98,6 +101,7 @@ function delTableRow(tdName)
     });
 }
 
+// 小貓個資
 function addCatCart(index)
 {
     let btnBossDel = document.querySelector(".btn-boss-del");
